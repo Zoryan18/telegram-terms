@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Условия использования</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            line-height: 1.6;
+        }
+        h2 { margin-bottom: 10px; }
+        .terms { max-height: 60vh; overflow-y: auto; margin-bottom: 20px; }
+        .agreement { display: flex; gap: 10px; margin-bottom: 15px; }
+        button {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
+            background: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #fff);
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h2>📋 Условия использования</h2>
+    <div class="terms">
+        <p>Перед использованием бота, пожалуйста, прочитайте условия:</p>
+        <ol>
+            <li>Вы соглашаетесь использовать бот согласно правилам и законодательству.</li>
+            <li>Мы не несем ответственности за некорректное использование.</li>
+            <li>Ваш Telegram ID обрабатывается только для работы функции бота.</li>
+            <li>Продолжая, вы принимаете эти условия.</li>
+        </ol>
+    </div>
+    <div class="agreement">
+        <input type="checkbox" id="agreeCheckbox">
+        <label for="agreeCheckbox">Я согласен с условиями</label>
+    </div>
+    <button id="acceptBtn" disabled>✅ Принять условия</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const checkbox = document.getElementById('agreeCheckbox');
+        const button = document.getElementById('acceptBtn');
+
+        checkbox.addEventListener('change', () => {
+            button.disabled = !checkbox.checked;
+        });
+
+        button.addEventListener('click', () => {
+            tg.sendData(JSON.stringify({ agreed: true, timestamp: new Date().toISOString() }));
+            tg.close();
+        });
+    </script>
+</body>
+</html>
