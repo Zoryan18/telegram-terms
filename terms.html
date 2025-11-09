@@ -43,11 +43,11 @@
             display: flex;
             align-items: flex-start;
             margin-bottom: 20px;
-            cursor: pointer;
         }
         input[type="checkbox"] {
             width: 24px;
             height: 24px;
+            min-width: 24px;
             margin-right: 12px;
             cursor: pointer;
             flex-shrink: 0;
@@ -56,6 +56,7 @@
             cursor: pointer;
             font-size: 16px;
             user-select: none;
+            flex: 1;
         }
         #acceptBtn {
             width: 100%;
@@ -72,6 +73,7 @@
         #acceptBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            background: #cccccc;
         }
         #acceptBtn:not(:disabled):active {
             opacity: 0.8;
@@ -113,12 +115,12 @@
     </div>
 
     <div class="agreement-section">
-        <div class="checkbox-container" onclick="toggleCheckbox()">
+        <div class="checkbox-container">
             <input type="checkbox" id="agreeCheckbox">
             <label for="agreeCheckbox">Я прочитал(а) и согласен(на) с условиями использования</label>
         </div>
         
-        <button id="acceptBtn" disabled onclick="sendAgreement()">
+        <button id="acceptBtn" disabled>
             ✅ Принять условия
         </button>
         
@@ -134,15 +136,19 @@
         const acceptBtn = document.getElementById('acceptBtn');
         const statusDiv = document.getElementById('status');
 
-        // Функция для переключения чекбокса
-        function toggleCheckbox() {
-            checkbox.checked = !checkbox.checked;
-            acceptBtn.disabled = !checkbox.checked;
-        }
+        console.log('Страница загружена');
+        console.log('Telegram WebApp:', tg);
 
         // Слушатель изменения чекбокса
         checkbox.addEventListener('change', function() {
+            console.log('Чекбокс изменён:', this.checked);
             acceptBtn.disabled = !this.checked;
+        });
+
+        // Слушатель клика на кнопку
+        acceptBtn.addEventListener('click', function() {
+            console.log('Кнопка нажата');
+            sendAgreement();
         });
 
         // Функция отправки согласия
@@ -182,7 +188,15 @@
         }
 
         // Настройка темы Telegram
-        document.body.style.backgroundColor = tg.backgroundColor || '#ffffff';
+        if (tg.themeParams) {
+            document.body.style.backgroundColor = tg.themeParams.bg_color || tg.backgroundColor || '#ffffff';
+        }
+
+        // Тест: проверка работы чекбокса
+        setTimeout(() => {
+            console.log('Состояние чекбокса:', checkbox.checked);
+            console.log('Состояние кнопки:', acceptBtn.disabled);
+        }, 1000);
     </script>
 </body>
 </html>
