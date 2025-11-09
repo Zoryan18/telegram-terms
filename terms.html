@@ -6,56 +6,183 @@
     <title>Условия использования</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
             padding: 20px;
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
             line-height: 1.6;
         }
-        h2 { margin-bottom: 10px; }
-        .terms { max-height: 60vh; overflow-y: auto; margin-bottom: 20px; }
-        .agreement { display: flex; gap: 10px; margin-bottom: 15px; }
-        button {
-            width: 100%; padding: 12px; border: none; border-radius: 8px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
-            background: var(--tg-theme-button-color, #0088cc);
-            color: var(--tg-theme-button-text-color, #fff);
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--tg-theme-text-color, #000000);
         }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .terms-content {
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .terms-content ol {
+            padding-left: 20px;
+        }
+        .terms-content li {
+            margin-bottom: 15px;
+        }
+        .agreement-section {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        label {
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+        }
+        #acceptBtn {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        #acceptBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #acceptBtn:not(:disabled):active {
+            opacity: 0.8;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h2>📋 Условия использования</h2>
-    <div class="terms">
-        <p>Перед использованием бота, пожалуйста, прочитайте условия:</p>
+    <h1>📋 Условия использования</h1>
+    
+    <div class="terms-content">
+        <p><strong>Добро пожаловать!</strong> Пожалуйста, внимательно ознакомьтесь с условиями использования нашего бота:</p>
+        <br>
         <ol>
-            <li>Вы соглашаетесь использовать бот согласно правилам и законодательству.</li>
-            <li>Мы не несем ответственности за некорректное использование.</li>
-            <li>Ваш Telegram ID обрабатывается только для работы функции бота.</li>
-            <li>Продолжая, вы принимаете эти условия.</li>
+            <li><strong>Общие положения:</strong> Используя этот бот, вы соглашаетесь с настоящими условиями. Если вы не согласны с условиями, пожалуйста, не используйте бот.</li>
+            <li><strong>Использование сервиса:</strong> Вы обязуетесь использовать бот только в законных целях и в соответствии с действующим законодательством.</li>
+            <li><strong>Обработка данных:</strong> Мы обрабатываем ваши данные (Telegram ID, имя пользователя) для обеспечения работы бота. Данные не передаются третьим лицам.</li>
+            <li><strong>Ответственность:</strong> Мы не несём ответственности за любые убытки, возникшие в результате использования или невозможности использования бота.</li>
+            <li><strong>Изменения условий:</strong> Мы оставляем за собой право изменять эти условия в любое время. Продолжение использования бота означает согласие с новыми условиями.</li>
+            <li><strong>Отзыв согласия:</strong> Вы можете в любой момент прекратить использование бота и удалить свои данные, связавшись с администратором.</li>
         </ol>
     </div>
-    <div class="agreement">
-        <input type="checkbox" id="agreeCheckbox">
-        <label for="agreeCheckbox">Я согласен с условиями</label>
+
+    <div class="agreement-section">
+        <div class="checkbox-container" onclick="toggleCheckbox()">
+            <input type="checkbox" id="agreeCheckbox">
+            <label for="agreeCheckbox">Я прочитал(а) и согласен(на) с условиями использования</label>
+        </div>
+        
+        <button id="acceptBtn" disabled onclick="sendAgreement()">
+            ✅ Принять условия
+        </button>
+        
+        <div id="status" class="status"></div>
     </div>
-    <button id="acceptBtn" disabled>✅ Принять условия</button>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        // Инициализация Telegram Web App
+        let tg = window.Telegram.WebApp;
         tg.expand();
+        
         const checkbox = document.getElementById('agreeCheckbox');
-        const button = document.getElementById('acceptBtn');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const statusDiv = document.getElementById('status');
 
-        checkbox.addEventListener('change', () => {
-            button.disabled = !checkbox.checked;
+        // Функция для переключения чекбокса
+        function toggleCheckbox() {
+            checkbox.checked = !checkbox.checked;
+            acceptBtn.disabled = !checkbox.checked;
+        }
+
+        // Слушатель изменения чекбокса
+        checkbox.addEventListener('change', function() {
+            acceptBtn.disabled = !this.checked;
         });
 
-        button.addEventListener('click', () => {
-            tg.sendData(JSON.stringify({ agreed: true, timestamp: new Date().toISOString() }));
-            tg.close();
-        });
+        // Функция отправки согласия
+        function sendAgreement() {
+            if (!checkbox.checked) {
+                showStatus('Пожалуйста, поставьте галочку', 'error');
+                return;
+            }
+
+            const data = {
+                agreed: true,
+                timestamp: new Date().toISOString(),
+                user_id: tg.initDataUnsafe?.user?.id || 'unknown'
+            };
+
+            console.log('Отправка данных:', data);
+            
+            try {
+                // Отправка данных боту
+                tg.sendData(JSON.stringify(data));
+                showStatus('✅ Условия приняты! Закройте это окно.', 'success');
+                
+                // Закрытие Web App через 1 секунду
+                setTimeout(() => {
+                    tg.close();
+                }, 1000);
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showStatus('❌ Ошибка отправки. Попробуйте ещё раз.', 'error');
+            }
+        }
+
+        // Функция показа статуса
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+        }
+
+        // Настройка темы Telegram
+        document.body.style.backgroundColor = tg.backgroundColor || '#ffffff';
     </script>
 </body>
 </html>
